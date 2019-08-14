@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Tetris"
         mc:Ignorable="d"
-        Title="MainWindow" Height="650" Width="700" KeyDown="Window_KeyDown">
+        Title="MainWindow" Height="650" Width="700" KeyDown="Window_KeyDown" ResizeMode="NoResize">
     <Grid x:Name="myGrid" Background="Black" Margin="0.4,0.4,0.2,-0.4">
         <Menu x:Name="menu" HorizontalAlignment="Left" Height="23" VerticalAlignment="Top" Width="794">
             <MenuItem x:Name="menu_start" Header="_Start" Click="Menu_start_Click">

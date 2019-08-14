@@ -29,7 +29,7 @@
  * is now what row 15 was previously and the real row 16 is row 17. I just started deleteing from top to bottom row and everything works perfectly. Anyway,
  * I got the game working fine, got score, lines, and level to show up and increment properly, got them to advance correctly on level up. Got restart 
  * implemented finally. Got the next block to display. Got the game over to happen, even if it's a little wonky. Added about box, and updated menu items.
- * All features are added at this point.
+ * All features are added at this point. Made it so window can't be resized.
  * 
  * BUGS:
  * If the user presses left and right really fast while the piece is at the bottom of the screen, weird things happen. <-- fixed itself somehow.
