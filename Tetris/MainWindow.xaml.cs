@@ -28,7 +28,8 @@
  * I'm dumb. The problem was when I deleted say row 17, row 17 would delete and then everything would move down. Now it wants to delete row 16, but row 16
  * is now what row 15 was previously and the real row 16 is row 17. I just started deleteing from top to bottom row and everything works perfectly. Anyway,
  * I got the game working fine, got score, lines, and level to show up and increment properly, got them to advance correctly on level up. Got restart 
- * implemented finally. Got the next block to display.
+ * implemented finally. Got the next block to display. Got the game over to happen, even if it's a little wonky. Added about box, and updated menu items.
+ * All features are added at this point.
  * 
  * BUGS:
  * If the user presses left and right really fast while the piece is at the bottom of the screen, weird things happen. <-- fixed itself somehow.
@@ -77,7 +78,8 @@ namespace Tetris
         private int time = 500;
         private static int lines_to_advance = 10;
 
-        private int num;
+        private int HIGH_SCORE = 0;
+
         private int next_piece;
         private Random random = new Random();
 
@@ -88,6 +90,7 @@ namespace Tetris
         List<Piece> pieces = new List<Piece>();
         int[] full_row_test = new int[10];
         bool new_piece = true;
+        bool isGameOver = false;
 
         public MainWindow()
         {
@@ -98,6 +101,8 @@ namespace Tetris
 
             newCmd.InputGestures.Add(new KeyGesture(Key.N, ModifierKeys.Control));
             CommandBindings.Add(new CommandBinding(newCmd, Menu_restart_Click));
+
+
 
             for (int i = 0; i < board.Length; i++)
             {
@@ -115,7 +120,7 @@ namespace Tetris
                     myGameCanvas.Children.Add(board_rect[i][j]);*/
                 }
             }
-            board[5][1] = 1;
+            board[3][1] = 1;
             next_piece = random.Next(1, 8);
 
         }
@@ -133,7 +138,6 @@ namespace Tetris
                         if (new_piece)
                         {
                             piece = new Piece(i, j, next_piece);
-                            pieces.Add(piece);
 
                             next_piece = random.Next(1, 8);
                             SetSource(next_piece);
@@ -145,6 +149,18 @@ namespace Tetris
                             board_rect[piece.pos_x_block2][piece.pos_y_block2].Content = "1";
                             board_rect[piece.pos_x_block3][piece.pos_y_block3].Content = "1";
                             board_rect[piece.pos_x_block4][piece.pos_y_block4].Content = "1";*/
+
+                            foreach (Piece p in pieces)
+                            {
+                                if (p.pos_x_block1 == piece.pos_x_block1 && p.pos_y_block1 == piece.pos_y_block1 ||
+                                    p.pos_x_block2 == piece.pos_x_block2 && p.pos_y_block2 == piece.pos_y_block2 ||
+                                    p.pos_x_block3 == piece.pos_x_block3 && p.pos_y_block3 == piece.pos_y_block3 ||
+                                    p.pos_x_block4 == piece.pos_x_block4 && p.pos_y_block4 == piece.pos_y_block4)
+                                {
+                                    isGameOver = true;
+                                }
+                            }
+                            pieces.Add(piece);
 
                             Canvas.SetLeft(piece.getBlock1(), piece.pos_x_block1 * game_piece_dx);
                             Canvas.SetTop(piece.getBlock1(), piece.pos_y_block1 * game_piece_dy);
@@ -163,6 +179,9 @@ namespace Tetris
                             myGameCanvas.Children.Add(piece.getBlock3());
                             myGameCanvas.Children.Add(piece.getBlock4());
                             new_piece = false;
+
+                            if (isGameOver)
+                                GameOver();
                         }
 
                         else
@@ -181,6 +200,8 @@ namespace Tetris
                                 board_rect[piece.pos_x_block2][piece.pos_y_block2].Content = "2";
                                 board_rect[piece.pos_x_block3][piece.pos_y_block3].Content = "2";
                                 board_rect[piece.pos_x_block4][piece.pos_y_block4].Content = "2";*/
+
+
 
                                 List<int> rows_to_delete = RowFull();
 
@@ -294,7 +315,7 @@ namespace Tetris
                                     }
                                 }
 
-                                board[5][1] = 1;
+                                board[3][1] = 1;
                                 new_piece = true;
                                 return;
                             }
@@ -441,7 +462,7 @@ namespace Tetris
                     board[i][j] = 0;
                 }
             }
-            board[5][1] = 1;
+            board[3][1] = 1;
             new_piece = true;
 
             gameTimer.Stop();
@@ -449,7 +470,21 @@ namespace Tetris
 
         private void GameOver()
         {
+            if (score > HIGH_SCORE)
+                HIGH_SCORE = score;
 
+            isGameOver = false;
+            gameTimer.Stop();
+            MessageBoxResult result = MessageBox.Show($"Your Score: {score}\nRestart Game?", "Game Over", MessageBoxButton.YesNo);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                Restart();
+            }
+            else
+            {
+                Environment.Exit(0);
+            }
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
@@ -834,9 +869,17 @@ namespace Tetris
             else if (e.Key == Key.Space)
             {
                 if (gameTimer.IsEnabled)
+                {
                     gameTimer.Stop();
+                    menu_pause.IsEnabled = false;
+                    menu_start.IsEnabled = true;
+                }
                 else
+                {
                     gameTimer.Start();
+                    menu_pause.IsEnabled = true;
+                    menu_start.IsEnabled = false;
+                }
             }
 
             else if (e.Key == Key.R)
@@ -859,24 +902,39 @@ namespace Tetris
         private void Menu_pause_Click(object sender, RoutedEventArgs e)
         {
             gameTimer.Stop();
+            menu_pause.IsEnabled = false;
+            menu_start.IsEnabled = true;
         }
 
         private void Menu_start_Click(object sender, RoutedEventArgs e)
         {
             gameTimer.Start();
+            menu_pause.IsEnabled = true;
+            menu_start.IsEnabled = false;
         }
 
         private void Menu_info_Click(object sender, RoutedEventArgs e)
         {
             gameTimer.Stop();
+            menu_pause.IsEnabled = false;
+            menu_start.IsEnabled = true;
 
-            MessageBox.Show("Start/Stop: Space key\nRestart: R key\nExit: ESC key", "Useless Box");
+            MessageBox.Show("Start/Stop: Space key\nRestart: R key or Ctrl+N\nExit: ESC key\nAdvance level: HOME key", "Controls");
 
         }
 
         private void Menu_restart_Click(object sender, RoutedEventArgs e)
         {
             Restart();
+        }
+
+        private void Menu_about_Click(object sender, RoutedEventArgs e)
+        {
+            gameTimer.Stop();
+            menu_pause.IsEnabled = false;
+            menu_start.IsEnabled = true;
+
+            MessageBox.Show($"High Score: {HIGH_SCORE}\n(Score is only saved on game over)\n\nDeveloper: Travis Cartmell", "About");
         }
     }
 }

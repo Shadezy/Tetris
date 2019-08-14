@@ -10,11 +10,13 @@
         <Menu x:Name="menu" HorizontalAlignment="Left" Height="23" VerticalAlignment="Top" Width="794">
             <MenuItem x:Name="menu_start" Header="_Start" Click="Menu_start_Click">
             </MenuItem>
-            <MenuItem x:Name="menu_pause" Header="_Pause" Click="Menu_pause_Click">
+            <MenuItem x:Name="menu_pause" Header="_Pause" Click="Menu_pause_Click" IsEnabled="False">
             </MenuItem>
             <MenuItem x:Name="menu_restart" Header="_Restart" Click="Menu_restart_Click">
             </MenuItem>
-            <MenuItem x:Name="menu_info" Header="_Info" Click="Menu_info_Click">
+            <MenuItem x:Name="menu_info" Header="_Controls" Click="Menu_info_Click">
+            </MenuItem>
+            <MenuItem x:Name="menu_about" Header="_About" Click="Menu_about_Click">
             </MenuItem>
             <MenuItem x:Name="menu_quit" Header="_Quit" Click="Menu_quit_Click">
             </MenuItem>
