@@ -20,6 +20,10 @@
  * Refactored my rotation code to be waaaaay easier to edit, and about 1000 less lines of code. Have all the rotations in now for all the shapes, with all the collision logic in there.
  * Wasn't as bad as I thought it was going to be. Left now is to actually make it work like a normal tetris game with scoring, disappearing lines, advancing the level, etc.
  * 
+ * 8/13
+ * Added rows disappearing and blocks falling when a row disappears. Works perfectly for only one row, but doesn't work correctly for 2+. I have
+ * no idea why it doesn't work, and it was very difficult to just get what I did implemented.
+ * 
  * BUGS:
  * If the user presses left and right really fast while the piece is at the bottom of the screen, weird things happen. <-- fixed itself somehow.
  * The shape's drawing wasn't getting updated correctly which caused it to be desynced with the array which was confusing to look at as well as
@@ -66,9 +70,9 @@ namespace Tetris
         private int[][] board = new int[10][];
         private Label[][] board_rect = new Label[10][];
 
-
         Piece piece;
-
+        List<Piece> pieces = new List<Piece>();
+        int[] full_row_test = new int[10];
         bool new_piece = true;
 
         public MainWindow()
@@ -78,11 +82,9 @@ namespace Tetris
             gameTimer.Interval = new TimeSpan(0, 0, 0, 0, 1000);
             gameTimer.Tick += GameTimer_Tick;
 
-            //game_piece_top = Canvas.GetTop(game_piece);
-            //game_piece_left = Canvas.GetLeft(game_piece);
-
             for (int i = 0; i < board.Length; i++)
             {
+                full_row_test[i] = 2;
                 board[i] = new int[18];
                 board_rect[i] = new Label[18];
 
@@ -105,18 +107,19 @@ namespace Tetris
             lbl_milli.Content = DateTime.Now.Millisecond;
 
             for (int i = 0; i < board.Length; i++)
+            {
                 for (int j = 0; j < board[i].Length; j++)
                 {
                     if (board[i][j] == 1)
                     {
-                        
+                        lbl_level.Content = pieces.Count();
                         if (new_piece)
                         {
-                            //CHANGE THIS LATER
                             Random random = new Random();
                             int num = random.Next(1, 8);
-
                             piece = new Piece(i, j, num);
+                            pieces.Add(piece);
+
                             board[piece.pos_x_block2][piece.pos_y_block2] = 1;
                             board[piece.pos_x_block3][piece.pos_y_block3] = 1;
                             board[piece.pos_x_block4][piece.pos_y_block4] = 1;
@@ -124,9 +127,6 @@ namespace Tetris
                             board_rect[piece.pos_x_block2][piece.pos_y_block2].Content = "1";
                             board_rect[piece.pos_x_block3][piece.pos_y_block3].Content = "1";
                             board_rect[piece.pos_x_block4][piece.pos_y_block4].Content = "1";
-
-                            //game_piece_left = i * game_piece_dx;
-                            //game_piece_top = j * game_piece_dy;
 
                             Canvas.SetLeft(piece.getBlock1(), piece.pos_x_block1 * game_piece_dx);
                             Canvas.SetTop(piece.getBlock1(), piece.pos_y_block1 * game_piece_dy);
@@ -150,25 +150,8 @@ namespace Tetris
                         else
                         {
                             if (piece.pos_y_block1 == board[i].Length - 1 || piece.pos_y_block2 == board[i].Length - 1 ||
-                                piece.pos_y_block3 == board[i].Length - 1 || piece.pos_y_block4 == board[i].Length - 1)
-                            {
-                                board[piece.pos_x_block1][piece.pos_y_block1] = 2;
-                                board[piece.pos_x_block2][piece.pos_y_block2] = 2;
-                                board[piece.pos_x_block3][piece.pos_y_block3] = 2;
-                                board[piece.pos_x_block4][piece.pos_y_block4] = 2;
-
-                                board_rect[piece.pos_x_block1][piece.pos_y_block1].Content = "2";
-                                board_rect[piece.pos_x_block2][piece.pos_y_block2].Content = "2";
-                                board_rect[piece.pos_x_block3][piece.pos_y_block3].Content = "2";
-                                board_rect[piece.pos_x_block4][piece.pos_y_block4].Content = "2";
-
-                                board[5][1] = 1;
-                                //board_rect[5][1].Content = "1";
-                                new_piece = true;
-                                return;
-                            }
-
-                            if (board[piece.pos_x_block1][piece.pos_y_block1 + 1] == 2 || board[piece.pos_x_block2][piece.pos_y_block2 + 1] == 2 ||
+                                piece.pos_y_block3 == board[i].Length - 1 || piece.pos_y_block4 == board[i].Length - 1 ||
+                                board[piece.pos_x_block1][piece.pos_y_block1 + 1] == 2 || board[piece.pos_x_block2][piece.pos_y_block2 + 1] == 2 ||
                                 board[piece.pos_x_block3][piece.pos_y_block3 + 1] == 2 || board[piece.pos_x_block4][piece.pos_y_block4 + 1] == 2)
                             {
                                 board[piece.pos_x_block1][piece.pos_y_block1] = 2;
@@ -181,8 +164,103 @@ namespace Tetris
                                 board_rect[piece.pos_x_block3][piece.pos_y_block3].Content = "2";
                                 board_rect[piece.pos_x_block4][piece.pos_y_block4].Content = "2";
 
+                                List<int> rows_to_delete = RowFull();
+
+                                if (rows_to_delete.Count != 0)
+                                {
+                                    foreach (int row in rows_to_delete)
+                                    {
+
+                                        foreach (Piece p in pieces)
+                                        {
+                                            if (p.pos_y_block1 == row)
+                                            {
+                                                p.removeBlock1();
+                                                myGameCanvas.Children.Remove(p.getBlock1());
+                                            }
+                                            if (p.pos_y_block2 == row)
+                                            {
+                                                p.removeBlock2();
+                                                myGameCanvas.Children.Remove(p.getBlock2());
+                                            }
+                                            if (p.pos_y_block3 == row)
+                                            {
+                                                p.removeBlock3();
+                                                myGameCanvas.Children.Remove(p.getBlock3());
+                                            }
+                                            if (p.pos_y_block4 == row)
+                                            {
+                                                p.removeBlock4();
+                                                myGameCanvas.Children.Remove(p.getBlock4());
+                                            }
+                                        }
+
+                                        for (int k = 0; k < board.Length; k++)
+                                        {
+                                            board[k][row] += -2;
+                                            board_rect[k][row].Content = int.Parse(board_rect[k][row].Content.ToString()) + -2;
+                                        }
+
+                                        foreach (Piece p in pieces)
+                                        {
+                                            if (p.pos_y_block1 < row)
+                                            {
+                                                p.top_block1 += game_piece_dx;
+                                                board[p.pos_x_block1][p.pos_y_block1] += -2;
+                                                board[p.pos_x_block1][p.pos_y_block1 + 1] += 2;
+                                                board_rect[p.pos_x_block1][p.pos_y_block1].Content = int.Parse(board_rect[p.pos_x_block1][p.pos_y_block1].Content.ToString()) + -2;
+                                                board_rect[p.pos_x_block1][p.pos_y_block1 + 1].Content = int.Parse(board_rect[p.pos_x_block1][p.pos_y_block1 + 1].Content.ToString()) + 2;
+                                                p.pos_y_block1++;
+                                            }
+
+                                            if (p.pos_y_block2 < row)
+                                            {
+                                                p.top_block2 += game_piece_dx;
+                                                board[p.pos_x_block2][p.pos_y_block2] += -2;
+                                                board[p.pos_x_block2][p.pos_y_block2 + 1] += 2;
+                                                board_rect[p.pos_x_block2][p.pos_y_block2].Content = int.Parse(board_rect[p.pos_x_block2][p.pos_y_block2].Content.ToString()) + -2;
+                                                board_rect[p.pos_x_block2][p.pos_y_block2 + 1].Content = int.Parse(board_rect[p.pos_x_block2][p.pos_y_block2 + 1].Content.ToString()) + 2;
+                                                p.pos_y_block2++;
+                                            }
+
+                                            if (p.pos_y_block3 < row)
+                                            {
+                                                p.top_block3 += game_piece_dx;
+                                                board[p.pos_x_block3][p.pos_y_block3] += -2;
+                                                board[p.pos_x_block3][p.pos_y_block3 + 1] += 2;
+                                                board_rect[p.pos_x_block3][p.pos_y_block3].Content = int.Parse(board_rect[p.pos_x_block3][p.pos_y_block3].Content.ToString()) + -2;
+                                                board_rect[p.pos_x_block3][p.pos_y_block3 + 1].Content = int.Parse(board_rect[p.pos_x_block3][p.pos_y_block3 + 1].Content.ToString()) + 2;
+                                                p.pos_y_block3++;
+                                            }
+
+                                            if (p.pos_y_block4 < row)
+                                            {
+                                                p.top_block4 += game_piece_dx;
+                                                board[p.pos_x_block4][p.pos_y_block4] += -2;
+                                                board[p.pos_x_block4][p.pos_y_block4 + 1] += 2;
+                                                board_rect[p.pos_x_block4][p.pos_y_block4].Content = int.Parse(board_rect[p.pos_x_block4][p.pos_y_block4].Content.ToString()) + -2;
+                                                board_rect[p.pos_x_block4][p.pos_y_block4 + 1].Content = int.Parse(board_rect[p.pos_x_block4][p.pos_y_block4 + 1].Content.ToString()) + 2;
+                                                p.pos_y_block4++;
+                                            }
+
+                                            Canvas.SetTop(p.getBlock1(), p.top_block1);
+                                            Canvas.SetTop(p.getBlock2(), p.top_block2);
+                                            Canvas.SetTop(p.getBlock3(), p.top_block3);
+                                            Canvas.SetTop(p.getBlock4(), p.top_block4);
+                                        }
+                                    }
+
+                                    for (int k = 0; k < pieces.Count; k++)
+                                    {
+                                        if (pieces[k].size <= 0)
+                                        {
+                                            pieces.RemoveAt(k);
+                                            k--;
+                                        }
+                                    }
+                                }
+
                                 board[5][1] = 1;
-                                //board_rect[5][1].Content = "1";
                                 new_piece = true;
                                 return;
                             }
@@ -197,7 +275,7 @@ namespace Tetris
                             board[piece.pos_x_block4][piece.pos_y_block4 + 1] = 1;
 
                             board_rect[piece.pos_x_block1][piece.pos_y_block1].Content = "0";
-                            board_rect[piece.pos_x_block1][piece.pos_y_block1+1].Content = "1";
+                            board_rect[piece.pos_x_block1][piece.pos_y_block1 + 1].Content = "1";
                             board_rect[piece.pos_x_block2][piece.pos_y_block2].Content = "0";
                             board_rect[piece.pos_x_block2][piece.pos_y_block2 + 1].Content = "1";
                             board_rect[piece.pos_x_block3][piece.pos_y_block3].Content = "0";
@@ -214,9 +292,6 @@ namespace Tetris
                             piece.top_block3 += game_piece_dx;
                             piece.top_block4 += game_piece_dx;
 
-                            //game_piece_left = piece.pos_x_block1 * game_piece_dx;
-                            //game_piece_top = piece.pos_y_block1 * game_piece_dy;
-
                             Canvas.SetLeft(piece.getBlock1(), piece.pos_x_block1 * game_piece_dx);
                             Canvas.SetTop(piece.getBlock1(), piece.pos_y_block1 * game_piece_dy);
                             Canvas.SetLeft(piece.getBlock2(), piece.pos_x_block2 * game_piece_dx);
@@ -229,26 +304,32 @@ namespace Tetris
                         return;
                     }
                 }
-
-
-            /*if (game_piece_left + game_piece.Width >= gameBallLeft
-                && gameBallTop + gameBall.Height / 2 >= game_piece_top && gameBallTop + gameBall.Height / 2 <= game_piece_top + game_piece.Height)
-            {
-                horizDirection = 1;
-                score++;
-
-                if (score < 10)
-                    lbl_score.Content = "0" + score;
-                else
-                    lbl_score.Content = score;
             }
-
-
-            gameBallLeft += dx * horizDirection;
-            gameBallTop += dy * vertDirection;*/
-
         }
 
+        private List<int> RowFull()
+        {
+            List<int> full_rows = new List<int>();
+            int[] row = new int[10];
+
+           for (int i = board[0].Length - 1; i >= 0; i--)
+           {
+                if (board[0][i] == 2)
+                {
+                    row[0] = 2;
+                    for (int k = 1; k < board.Length; k++)
+                    {
+                        row[k] = board[k][i];
+                    }
+
+                    if (row.SequenceEqual(full_row_test))
+                    {
+                        full_rows.Add(i);
+                    }
+                }
+            }
+            return full_rows;
+        }
         private void Restart()
         {
             dx = 2;

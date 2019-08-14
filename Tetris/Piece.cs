@@ -31,23 +31,30 @@ namespace Tetris
         public double top_block3 { get; set; }
         public double top_block4 { get; set; }
 
-
         Rectangle block1;
         Rectangle block2;
         Rectangle block3;
         Rectangle block4;
 
+        bool block1_exist = true;
+        bool block2_exist = true;
+        bool block3_exist = true;
+        bool block4_exist = true;
+
+
         private static int block_dimension = 30;
-        private static double block_opacity = .2;
+        private static double block_opacity = .6;
 
         public string type { get; set; }
         public int position { get; set; }
+        public int size { get; private set; }
 
         public Piece(int pos_x, int pos_y, int num)
         {
             this.pos_x_block1 = pos_x;
             this.pos_y_block1 = pos_y;
             position = 0;
+            size = 4;
             left_block1 = pos_x * block_dimension;
             top_block1 = pos_y * block_dimension;
 
@@ -57,6 +64,7 @@ namespace Tetris
                 type = "line";
                 block1 = new Rectangle();
                 setupBlock(block1);
+                block1.Fill = Brushes.Cyan;
 
                 block2 = copyBlock(block1);
                 pos_x_block2 = pos_x + 1;
@@ -83,6 +91,7 @@ namespace Tetris
                 type = "left-l";
                 block1 = new Rectangle();
                 setupBlock(block1);
+                block1.Fill = Brushes.DarkBlue;
 
                 block2 = copyBlock(block1);
                 pos_x_block2 = pos_x;
@@ -109,6 +118,7 @@ namespace Tetris
                 type = "right-l";
                 block1 = new Rectangle();
                 setupBlock(block1);
+                block1.Fill = Brushes.Orange;
 
                 block2 = copyBlock(block1);
                 pos_x_block2 = pos_x + 1;
@@ -135,6 +145,7 @@ namespace Tetris
                 type = "s";
                 block1 = new Rectangle();
                 setupBlock(block1);
+                block1.Fill = Brushes.LimeGreen;
 
                 block2 = copyBlock(block1);
                 pos_x_block2 = pos_x + 1;
@@ -161,6 +172,7 @@ namespace Tetris
                 type = "z";
                 block1 = new Rectangle();
                 setupBlock(block1);
+                block1.Fill = Brushes.Red;
 
                 block2 = copyBlock(block1);
                 pos_x_block2 = pos_x + 1;
@@ -187,6 +199,7 @@ namespace Tetris
                 type = "square";
                 block1 = new Rectangle();
                 setupBlock(block1);
+                block1.Fill = Brushes.Yellow;
 
                 block2 = copyBlock(block1);
                 pos_x_block2 = pos_x + 1;
@@ -213,6 +226,7 @@ namespace Tetris
                 type = "t";
                 block1 = new Rectangle();
                 setupBlock(block1);
+                block1.Fill = Brushes.Purple;
 
                 block2 = copyBlock(block1);
                 pos_x_block2 = pos_x + 1;
@@ -238,7 +252,6 @@ namespace Tetris
         {
             block.Width = block_dimension;
             block.Height = block_dimension;
-            block.Fill = Brushes.Red;
             block.Stroke = Brushes.White;
             block.StrokeThickness = 1;
             block.Opacity = block_opacity;
@@ -278,5 +291,40 @@ namespace Tetris
             return block4;
         }
 
+        public void removeBlock1()
+        {
+            if (block1_exist)
+            {
+                size--;
+                block1_exist = false;
+            }
+        }
+
+        public void removeBlock2()
+        {
+            if (block2_exist)
+            {
+                size--;
+                block2_exist = false;
+            }
+        }
+
+        public void removeBlock3()
+        {
+            if (block3_exist)
+            {
+                size--;
+                block3_exist = false;
+            }
+        }
+
+        public void removeBlock4()
+        {
+            if (block4_exist)
+            {
+                size--;
+                block4_exist = false;
+            }
+        }
     }
 }
