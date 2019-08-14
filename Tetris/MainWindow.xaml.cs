@@ -37,6 +37,10 @@
  * caused it to crash if you went far enough down. <-- It was fixed by adding an extra set of code in the tick method, I don't understand why
  * this wasn't a problem when I only had one block instead of four though. It should have been desynced then too.
  * 
+ * FEATURES NOT IMPLEMENTED:
+ * No saving or loading tetris games. I feel the way that I designed this project, it would be very difficult to be able to recognized pieces froma text file, and I
+ * assumed without a loading feature, a saving feature doesn't make sense.
+ * 
  */
 
 using System;
