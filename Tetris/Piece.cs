@@ -36,14 +36,14 @@ namespace Tetris
         Rectangle block3;
         Rectangle block4;
 
-        bool block1_exist = true;
-        bool block2_exist = true;
-        bool block3_exist = true;
-        bool block4_exist = true;
+        public bool block1_exist { get; set; }
+        public bool block2_exist { get; set; }
+        public bool block3_exist { get; set; }
+        public bool block4_exist { get; set; }
 
 
         private static int block_dimension = 30;
-        private static double block_opacity = .6;
+        private static double block_opacity = 1;
 
         public string type { get; set; }
         public int position { get; set; }
@@ -57,6 +57,10 @@ namespace Tetris
             size = 4;
             left_block1 = pos_x * block_dimension;
             top_block1 = pos_y * block_dimension;
+            block1_exist = true;
+            block2_exist = true;
+            block3_exist = true;
+            block4_exist = true;
 
             //LINE
             if (num == 1)

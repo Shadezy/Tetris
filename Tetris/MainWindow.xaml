@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Tetris"
         mc:Ignorable="d"
         Title="MainWindow" Height="650" Width="700" KeyDown="Window_KeyDown">
-    <Grid Background="Black" Margin="0.4,0.4,0.2,-0.4">
+    <Grid x:Name="myGrid" Background="Black" Margin="0.4,0.4,0.2,-0.4">
         <Menu x:Name="menu" HorizontalAlignment="Left" Height="23" VerticalAlignment="Top" Width="794">
             <MenuItem x:Name="menu_start" Header="_Start" Click="Menu_start_Click">
             </MenuItem>
@@ -33,16 +33,17 @@
         </Canvas>
 
         <Label x:Name="lbl_next" Content="Next Block" Foreground="Purple" Margin="369,30,48.6,0" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="fonts/#Bit5x3" FontSize="48" FontWeight="Bold" Width="256" Height="41"/>
-        <Label x:Name="lbl_milli" Content="00" Foreground="Yellow" Margin="379,76,58,0" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="fonts/#Bit5x3" FontSize="48" FontWeight="Bold" Width="256" Height="41"/>
-        <Label x:Name="lbl_sec" Content="00" Foreground="Yellow" Margin="379,122,58,0" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="fonts/#Bit5x3" FontSize="48" FontWeight="Bold" Width="256" Height="41"/>
+        <Image x:Name="img_next_piece" HorizontalAlignment="Left" Height="100" Margin="450,76,0,0" VerticalAlignment="Top" Width="100"/>
+        
+        <Label x:Name="lbl_milli" Content="00" Foreground="Yellow" Margin="563,569,10,0" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="fonts/#Bit5x3" FontSize="48" FontWeight="Bold" Width="120" Height="41"/>
 
-        <Label x:Name="lbl_score" Content="00" Foreground="Yellow" Margin="464,230,124.6,0" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="fonts/#Bit5x3" FontSize="48" FontWeight="Bold" Width="85" Height="41"/>
+        <Label x:Name="lbl_score" Content="00" Foreground="Yellow" Margin="474,230,10,0" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="fonts/#Bit5x3" FontSize="48" FontWeight="Bold" Width="209" Height="41"/>
         <Label x:Name="lbl_text_score" Content="Score" Foreground="Purple" Margin="434,188,111.6,0" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="fonts/#Bit5x3" FontSize="48" FontWeight="Bold" Width="128" Height="41"/>
 
         <Label x:Name="lbl_lines" Content="00" Foreground="Yellow" Margin="464,322,124,0" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="fonts/#Bit5x3" FontSize="48" FontWeight="Bold" Width="85" Height="41"/>
         <Label x:Name="lbl_text_lines" Content="Lines" Foreground="Purple" Margin="434,276,111,0" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="fonts/#Bit5x3" FontSize="48" FontWeight="Bold" Width="128" Height="41"/>
 
-        <Label x:Name="lbl_level" Content="00" Foreground="Yellow" Margin="464,414,124,0" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="fonts/#Bit5x3" FontSize="48" FontWeight="Bold" Width="85" Height="41"/>
+        <Label x:Name="lbl_level" Content="01" Foreground="Yellow" Margin="464,414,124,0" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="fonts/#Bit5x3" FontSize="48" FontWeight="Bold" Width="85" Height="41"/>
         <Label x:Name="lbl_text_level" Content="Level" Foreground="Purple" Margin="434,368,111,0" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="fonts/#Bit5x3" FontSize="48" FontWeight="Bold" Width="128" Height="41"/>
 
     </Grid>
