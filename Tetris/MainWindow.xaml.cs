@@ -446,6 +446,9 @@ namespace Tetris
             lvl = 1;
             lines = 0;
             time = 500;
+            gameTimer.Interval = new TimeSpan(0, 0, 0, 0, time);
+            menu_start.IsEnabled = true;
+            menu_pause.IsEnabled = false;
 
             foreach (Piece p in pieces)
             {
